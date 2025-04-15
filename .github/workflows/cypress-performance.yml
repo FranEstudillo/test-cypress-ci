@@ -25,10 +25,11 @@ jobs:
       - name: Cache Node.js modules
         uses: actions/cache@v3
         id: cache-npm
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install dependencies
         if: steps.cache-npm.outputs.cache-hit != 'true'
@@ -37,10 +38,11 @@ jobs:
       - name: Cache Cypress binary
         uses: actions/cache@v3
         id: cache-cypress
-        key: ${{ runner.os }}-cypress-${{ hashFiles('cypress.config.*') }} # Ajusta si tienes otra config
-        restore-keys: |
-          ${{ runner.os }}-cypress-
-        path: /home/runner/.cache/Cypress
+        with:
+          path: /home/runner/.cache/Cypress
+          key: ${{ runner.os }}-cypress-${{ hashFiles('cypress.config.*') }} # Ajusta si tienes otra config
+          restore-keys: |
+            ${{ runner.os }}-cypress-
 
       - name: Grant execute permissions to Cypress (again, just in case)
         run: chmod +x /home/runner/.cache/Cypress/*/Cypress/Cypress
