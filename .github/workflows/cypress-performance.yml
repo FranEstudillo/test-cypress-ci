@@ -40,11 +40,15 @@ jobs:
         id: cache-cypress
         with:
           path: /home/runner/.cache/Cypress
-          key: ${{ runner.os }}-cypress-${{ hashFiles('cypress.config.*') }} # Ajusta si tienes otra config
+          key: ${{ runner.os }}-cypress-${{ hashFiles('cypress.config.*') }}
           restore-keys: |
             ${{ runner.os }}-cypress-
 
-      - name: Grant execute permissions to Cypress (again, just in case)
+      - name: Install Cypress binary if not cached
+        if: steps.cache-cypress.outputs.cache-hit != 'true'
+        run: npx cypress install
+
+      - name: Grant execute permissions to Cypress
         run: chmod +x /home/runner/.cache/Cypress/*/Cypress/Cypress
 
       - name: Run Cypress tests - Instance ${{ matrix.instance }}
