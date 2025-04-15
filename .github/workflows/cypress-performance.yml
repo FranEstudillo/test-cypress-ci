@@ -2,16 +2,16 @@ name: Cypress Performance Tests
 
 on:
   push:
-    branches: [main] # Ejecutar este workflow en cada push a la rama principal (puedes ajustarlo)
+    branches: [main]
   pull_request:
-    branches: [main] # Ejecutar este workflow en cada pull request a la rama principal (puedes ajustarlo)
+    branches: [main]
 
 jobs:
   performance_tests:
     strategy:
       matrix:
-        instance: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # Define el número de ejecuciones paralelas
-    runs-on: ubuntu-latest # El sistema operativo donde se ejecutará cada instancia
+        instance: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -20,21 +20,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18.x" # Usa la versión de Node.js que necesites
+          node-version: "18.x"
 
       - name: Install dependencies
         run: npm install
 
-      - name: Run Cypress tests - Instance ${{ matrix.instance }}
-        run: npx cypress run --spec "cypress\e2e\venta-unlimit-sencillo.cy.js" --group "instance-${{ matrix.instance }}"
-        # Aquí ejecutamos Cypress. El flag --spec indica el archivo de prueba.
-        # --group nos ayuda a identificar los resultados de cada instancia.
+      - name: Grant execute permissions to Cypress
+        run: chmod +x ./node_modules/.bin/cypress
 
-      # Opcional: Recopilar y reportar resultados (esto puede ser más complejo y dependerá de cómo quieras analizar el rendimiento)
-      # - name: Aggregate and report results
-      #   if: always()
-      #   run: |
-      #     # Lógica para recopilar los logs o métricas de cada instancia
-      #     # y generar un reporte. Esto podría involucrar guardar los logs
-      #     # en archivos separados y luego procesarlos.
-      #     echo "Implementar lógica para agregar y reportar resultados aquí"
+      - name: Run Cypress tests - Instance ${{ matrix.instance }}
+        run: npx cypress run --spec "cypress/e2e/venta-unlimit-sencillo.cy.js" --group "instance-${{ matrix.instance }}"
+
+      # Opcional: Recopilar y reportar resultados
+      # ...
