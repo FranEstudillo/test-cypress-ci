@@ -35,6 +35,9 @@ jobs:
         if: steps.cache-npm.outputs.cache-hit != 'true'
         run: npm install
 
+      - name: Grant execute permissions to npx
+        run: chmod +x $(which npx)
+
       - name: Cache Cypress binary
         uses: actions/cache@v3
         id: cache-cypress
@@ -48,7 +51,7 @@ jobs:
         if: steps.cache-cypress.outputs.cache-hit != 'true'
         run: npx cypress install
 
-      - name: Grant execute permissions to Cypress
+      - name: Grant execute permissions to Cypress binary
         run: chmod +x /home/runner/.cache/Cypress/*/Cypress/Cypress
 
       - name: Run Cypress tests - Instance ${{ matrix.instance }}
