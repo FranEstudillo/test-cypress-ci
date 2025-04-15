@@ -1,0 +1,6 @@
+{
+  "devDependencies": {
+    "cypress": "^14.3.0",
+    "playwright-webkit": "^1.49.1"
+  }
+}
