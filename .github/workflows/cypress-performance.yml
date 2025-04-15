@@ -1,0 +1,40 @@
+name: Cypress Performance Tests
+
+on:
+  push:
+    branches: [main] # Ejecutar este workflow en cada push a la rama principal (puedes ajustarlo)
+  pull_request:
+    branches: [main] # Ejecutar este workflow en cada pull request a la rama principal (puedes ajustarlo)
+
+jobs:
+  performance_tests:
+    strategy:
+      matrix:
+        instance: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # Define el número de ejecuciones paralelas
+    runs-on: ubuntu-latest # El sistema operativo donde se ejecutará cada instancia
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18.x" # Usa la versión de Node.js que necesites
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run Cypress tests - Instance ${{ matrix.instance }}
+        run: npx cypress run --spec "cypress\e2e\venta-unlimit-sencillo.cy.js" --group "instance-${{ matrix.instance }}"
+        # Aquí ejecutamos Cypress. El flag --spec indica el archivo de prueba.
+        # --group nos ayuda a identificar los resultados de cada instancia.
+
+      # Opcional: Recopilar y reportar resultados (esto puede ser más complejo y dependerá de cómo quieras analizar el rendimiento)
+      # - name: Aggregate and report results
+      #   if: always()
+      #   run: |
+      #     # Lógica para recopilar los logs o métricas de cada instancia
+      #     # y generar un reporte. Esto podría involucrar guardar los logs
+      #     # en archivos separados y luego procesarlos.
+      #     echo "Implementar lógica para agregar y reportar resultados aquí"
