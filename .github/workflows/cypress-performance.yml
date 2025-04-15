@@ -22,11 +22,28 @@ jobs:
         with:
           node-version: "18.x"
 
+      - name: Cache Node.js modules
+        uses: actions/cache@v3
+        id: cache-npm
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
       - name: Install dependencies
+        if: steps.cache-npm.outputs.cache-hit != 'true'
         run: npm install
 
-      - name: Grant execute permissions to Cypress
-        run: chmod +x ./node_modules/.bin/cypress
+      - name: Cache Cypress binary
+        uses: actions/cache@v3
+        id: cache-cypress
+        key: ${{ runner.os }}-cypress-${{ hashFiles('cypress.config.*') }} # Ajusta si tienes otra config
+        restore-keys: |
+          ${{ runner.os }}-cypress-
+        path: /home/runner/.cache/Cypress
+
+      - name: Grant execute permissions to Cypress (again, just in case)
+        run: chmod +x /home/runner/.cache/Cypress/*/Cypress/Cypress
 
       - name: Run Cypress tests - Instance ${{ matrix.instance }}
         run: npx cypress run --spec "cypress/e2e/venta-unlimit-sencillo.cy.js" --group "instance-${{ matrix.instance }}"
